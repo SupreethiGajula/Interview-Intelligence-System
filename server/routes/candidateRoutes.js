@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Candidate = require("../models/Candidate");
+const RoleWeight = require("../models/RoleWeight");
 
 
 
@@ -42,9 +43,22 @@ router.put("/:id/status", async (req,res)=>{
 router.put("/:id/scores",async(req,res)=>{
     try{
         const { dsaScore, systemDesignScore, projectScore, hrScore } = req.body;
-        const finalScore =
-            (dsaScore + systemDesignScore + projectScore + hrScore) / 4;
+        const newCandidate = await Candidate.findById(req.params.id);
+        if (!newCandidate) {
+            return res.status(404).json({ message: "Candidate not found" });
+        }
+        console.log("Candidate role:", newCandidate.targetRole);
 
+        const roleWeight = await RoleWeight.findOne({ role: newCandidate.targetRole });
+
+        console.log("Role weight found:", roleWeight);        if(!roleWeight){
+            return res.status(404).json({ message: "Role weights not found" });
+        }
+        const finalScore = dsaScore * roleWeight.dsaWeight +
+            systemDesignScore * roleWeight.systemDesignWeight +
+            projectScore * roleWeight.projectWeight +
+            hrScore * roleWeight.hrWeight;
+            
         const updatedCandidate = await Candidate.findByIdAndUpdate(
             req.params.id,
             {
@@ -63,4 +77,57 @@ router.put("/:id/scores",async(req,res)=>{
         res.status(500).json({ error: err.message });
     }
 })
+
+router.get("/top/:role", async (req, res) => {
+    try {
+
+        const role = req.params.role;
+        //we get top 5 candidates for a specific role
+        const candidates = await Candidate.find(
+                { targetRole: role },
+                { name: 1, finalScore: 1, experience: 1 }
+            )
+            .sort({ finalScore: -1 })
+            .limit(5);
+
+        if (candidates.length === 0) {
+            return res.status(404).json({ message: "No candidates found for this role" });
+        }
+
+        res.json(candidates);
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+//leaderboard API - ranks
+
+router.get("/leaderboard/:role", async (req, res) => {
+    try {
+
+        const role = req.params.role;
+
+        const candidates = await Candidate.find(
+            { targetRole: role },
+            { name: 1, finalScore: 1, experience: 1 }
+        ).sort({ finalScore: -1 });
+
+        if (candidates.length === 0) {
+            return res.status(404).json({ message: "No candidates found for this role" });
+        }
+
+        const leaderboard = candidates.map((candidate, index) => ({
+            rank: index + 1,
+            name: candidate.name,
+            experience: candidate.experience,
+            finalScore: candidate.finalScore
+        }));
+
+        res.json(leaderboard);
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 module.exports = router;

@@ -7,6 +7,11 @@ const candidateSchema = new Schema({
     experience: { type: Number, required: true },
     skills: { type: [String], required: true },
     targetRole: { type: String, required: true },
+    status:{
+        type:String,
+        enum:["Applied","DSA","SystemDesign","HR","Selected","Rejected"],
+        default:"Applied"
+    },
     dsaScore: { type: Number, default: 0 },
     systemDesignScore: { type: Number, default: 0 },
     projectScore: { type: Number, default: 0 },

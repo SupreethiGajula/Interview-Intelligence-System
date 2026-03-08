@@ -1,1 +1,0 @@
-design a schema with roles and weights-json

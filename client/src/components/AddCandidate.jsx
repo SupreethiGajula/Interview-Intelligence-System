@@ -1,10 +1,24 @@
-import {useState} from "react";
-function AddCandidate({refreshCandidates}){
+import { useState, useEffect } from "react";
+
+function AddCandidate({ refreshCandidates }) {
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [experience, setExperience] = useState("");
   const [skills, setSkills] = useState("");
   const [targetRole, setTargetRole] = useState("");
+
+  const [roles, setRoles] = useState([]); // stores roles from backend
+
+
+  // fetch roles when component loads
+  useEffect(() => {
+    fetch("http://localhost:5001/roleweights")
+      .then(res => res.json())
+      .then(data => setRoles(data))
+      .catch(err => console.error(err));
+  }, []);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,8 +29,7 @@ function AddCandidate({refreshCandidates}){
       experience: Number(experience),
       skills: skills.split(","),
       targetRole
-         };
-    
+    };
 
     const res = await fetch("http://localhost:5001/candidates", {
       method: "POST",
@@ -37,8 +50,8 @@ function AddCandidate({refreshCandidates}){
     setExperience("");
     setSkills("");
     setTargetRole("");
-    //we are clearing the inputs after the form submit
-  }
+  };
+
 
   return (
     <div style={{ marginBottom: "40px" }}>
@@ -78,11 +91,22 @@ function AddCandidate({refreshCandidates}){
 
         <br /><br />
 
-        <input
-          placeholder="Target Role"
+        {/* REPLACED INPUT WITH DROPDOWN */}
+
+        <select
           value={targetRole}
           onChange={(e) => setTargetRole(e.target.value)}
-        />
+        >
+
+          <option value="">Select Target Role</option>
+
+          {roles.map((role) => (
+            <option key={role._id} value={role.role}>
+              {role.role}
+            </option>
+          ))}
+
+        </select>
 
         <br /><br />
 

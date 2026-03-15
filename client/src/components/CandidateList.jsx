@@ -1,119 +1,182 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import ScoreChart from "./ScoreChart";
 
 function CandidateList({ candidates, refreshCandidates }) {
 
-  const [scores, setScores] = useState({});
+    const [scores, setScores] = useState({});
+    const [selectedRole, setSelectedRole] = useState("");
+    const [roles, setRoles] = useState([]);
+    const [sortOrder, setSortOrder] = useState("");
 
-  const handleChange = (id, field, value) => {
-    setScores({
-      ...scores,
-      [id]: {
-        ...scores[id],
-        [field]: value
-      }
-    });
-  };
+    // fetch roles for filter dropdown
+    useEffect(() => {
+        fetch("http://localhost:5001/roleweights")
+            .then(res => res.json())
+            .then(data => setRoles(data))
+            .catch(err => console.error(err));
+    }, []);
 
-  const submitScores = async (id) => {
+    let filteredCandidates = selectedRole
+        ? candidates.filter(c => c.targetRole === selectedRole)
+        : candidates;
 
-    const candidateScores = scores[id];
+    if (sortOrder === "asc") {
+        filteredCandidates = [...filteredCandidates].sort(
+            (a, b) => (a.finalScore || 0) - (b.finalScore || 0)
+        );
+    }
 
-    const res = await fetch(`http://localhost:5001/candidates/${id}/scores`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(candidateScores)
-    });
+    if (sortOrder === "desc") {
+        filteredCandidates = [...filteredCandidates].sort(
+            (a, b) => (b.finalScore || 0) - (a.finalScore || 0)
+        );
+    }
 
-    const data = await res.json();
+    const handleChange = (id, field, value) => {
+        setScores({
+            ...scores,
+            [id]: {
+                ...scores[id],
+                [field]: value
+            }
+        });
+    };
 
-    console.log(data);
+    const submitScores = async (id) => {
 
-    alert("Scores updated successfully!");
+        const candidateScores = scores[id];
 
-    refreshCandidates();
-  };
+        const res = await fetch(`http://localhost:5001/candidates/${id}/scores`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(candidateScores)
+        });
 
-  return (
-    <div>
-      <h2>Candidate List</h2>
+        const data = await res.json();
+        console.log(data);
 
-      <table border="1" cellPadding="10">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Experience</th>
-            <th>Role</th>
-            <th>DSA</th>
-            <th>System Design</th>
-            <th>Projects</th>
-            <th>HR</th>
-            <th>Final Score</th>
-            <th>Action</th>
-          </tr>
-        </thead>
+        alert("Scores updated successfully!");
 
-        <tbody>
-          {candidates.map((c) => (
-            <tr key={c._id}>
+        refreshCandidates();
+    };
 
-              <td>{c.name}</td>
-              <td>{c.email}</td>
-              <td>{c.experience}</td>
-              <td>{c.targetRole}</td>
+    return (
+        <div>
 
-              <td>
-                <input
-                  type="number"
-                  onChange={(e) =>
-                    handleChange(c._id, "dsaScore", e.target.value)
-                  }
-                />
-              </td>
+            <h3>Filter by Role</h3>
 
-              <td>
-                <input
-                  type="number"
-                  onChange={(e) =>
-                    handleChange(c._id, "systemDesignScore", e.target.value)
-                  }
-                />
-              </td>
+            <select
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+            >
+                <option value="">All Roles</option>
 
-              <td>
-                <input
-                  type="number"
-                  onChange={(e) =>
-                    handleChange(c._id, "projectScore", e.target.value)
-                  }
-                />
-              </td>
+                {roles.map((role) => (
+                    <option key={role._id} value={role.role}>
+                        {role.role}
+                    </option>
+                ))}
+            </select>
 
-              <td>
-                <input
-                  type="number"
-                  onChange={(e) =>
-                    handleChange(c._id, "hrScore", e.target.value)
-                  }
-                />
-              </td>
+            <br /><br />
+            <h3>Sort by Final Score</h3>
 
-              <td>{c.finalScore}</td>
+            <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+            >
+                <option value="">No Sorting</option>
+                <option value="desc">Highest Score First</option>
+                <option value="asc">Lowest Score First</option>
+            </select>
 
-              <td>
-                <button onClick={() => submitScores(c._id)}>
-                  Add Scores
-                </button>
-              </td>
+            <br /><br />
 
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+            <h2>Candidate List</h2>
+
+            <table border="1" cellPadding="10">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Experience</th>
+                        <th>Role</th>
+                        <th>DSA</th>
+                        <th>System Design</th>
+                        <th>Projects</th>
+                        <th>HR</th>
+                        <th>Final Score</th>
+                        <th>Action</th>
+                        <th>Score Chart</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {filteredCandidates.map((c) => (
+                        <tr key={c._id}>
+
+                            <td>{c.name}</td>
+                            <td>{c.email}</td>
+                            <td>{c.experience}</td>
+                            <td>{c.targetRole}</td>
+
+                            <td>
+                                <input
+                                    type="number"
+                                    onChange={(e) =>
+                                        handleChange(c._id, "dsaScore", e.target.value)
+                                    }
+                                />
+                            </td>
+
+                            <td>
+                                <input
+                                    type="number"
+                                    onChange={(e) =>
+                                        handleChange(c._id, "systemDesignScore", e.target.value)
+                                    }
+                                />
+                            </td>
+
+                            <td>
+                                <input
+                                    type="number"
+                                    onChange={(e) =>
+                                        handleChange(c._id, "projectScore", e.target.value)
+                                    }
+                                />
+                            </td>
+
+                            <td>
+                                <input
+                                    type="number"
+                                    onChange={(e) =>
+                                        handleChange(c._id, "hrScore", e.target.value)
+                                    }
+                                />
+                            </td>
+
+                            <td>{c.finalScore}</td>
+
+                            <td>
+                                <button onClick={() => submitScores(c._id)}>
+                                    Add Scores
+                                </button>
+                            </td>
+
+                            <td>
+                                <ScoreChart candidate={c} />
+                            </td>
+
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+        </div>
+    );
 }
 
 export default CandidateList;

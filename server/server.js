@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const candidateRoutes = require("./routes/candidateRoutes");
 const roleRoutes = require("./routes/roleRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/candidates", candidateRoutes);
 app.use("/roleweights",roleRoutes);
+app.use("/auth",authRoutes)
 
 // Test route
 app.get('/', (req, res) => {

@@ -7,6 +7,7 @@ function CandidateList({ candidates, refreshCandidates }) {
     const [selectedRole, setSelectedRole] = useState("");
     const [roles, setRoles] = useState([]);
     const [sortOrder, setSortOrder] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
 
     // fetch roles for filter dropdown
     useEffect(() => {
@@ -19,6 +20,10 @@ function CandidateList({ candidates, refreshCandidates }) {
     let filteredCandidates = selectedRole
         ? candidates.filter(c => c.targetRole === selectedRole)
         : candidates;
+    filteredCandidates = filteredCandidates.filter(c =>
+        c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     if (sortOrder === "asc") {
         filteredCandidates = [...filteredCandidates].sort(
@@ -93,6 +98,11 @@ function CandidateList({ candidates, refreshCandidates }) {
             </select>
 
             <br /><br />
+            <h3>Search candidate</h3>
+            <input type="text" value={searchTerm} 
+            placeholder="Search by name or email"
+            onChange={(e) => setSearchTerm(e.target.value)}>
+            </input>
 
             <h2>Candidate List</h2>
 

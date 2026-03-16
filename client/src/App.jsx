@@ -29,7 +29,7 @@
 // }
 
 // export default App;
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import RecruiterDashboard from "./components/RecruiterDashboard";
@@ -39,6 +39,14 @@ function App() {
 
   const [user, setUser] = useState(null);
   const [showRegister, setShowRegister] = useState(false);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // optionally call backend to verify token
+      console.log("User already logged in");
+    }
+  }, []);
 
   if (!user) {
     return (
@@ -58,7 +66,7 @@ function App() {
     );
 
   }
-if (user.role === "recruiter") {
+  if (user.role === "recruiter") {
     return <RecruiterDashboard user={user} />;
   }
 
@@ -67,7 +75,7 @@ if (user.role === "recruiter") {
   }
 
   return <h2>Welcome {user.name}</h2>;
- 
+
 }
 
 export default App;

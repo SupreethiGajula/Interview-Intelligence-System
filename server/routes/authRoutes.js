@@ -1,5 +1,6 @@
 const express = require("express");
 const User = require("../models/Users.js");
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
@@ -53,11 +54,17 @@ router.post("/login", async (req, res) => {
     }
 
     if (user.password !== password) {
-      return res.status(401).json({ message: "Invalid password or username" });
+      return res.status(401).json({ message: "Invalid password" });
     }
 
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      "secretkey",
+      { expiresIn: "1d" }
+    );
+
     res.json({
-      message: "Login successful",
+      token,
       user
     });
 

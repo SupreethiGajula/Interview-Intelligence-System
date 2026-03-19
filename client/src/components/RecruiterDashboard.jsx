@@ -9,7 +9,11 @@ function RecruiterDashboard({ user }) {
     // Fetch candidates from backend
     const fetchCandidates = async () => {
         try {
-            const res = await fetch("http://localhost:5001/candidates");
+            const res = await fetch("http://localhost:5001/candidates",
+                {headers: {
+    Authorization: `Bearer ${localStorage.getItem("token")}`}
+  });
+            
             const data = await res.json();
             setCandidates(data);
         } catch (err) {
@@ -38,6 +42,7 @@ function RecruiterDashboard({ user }) {
             />
             <button onClick={() => {
                 localStorage.removeItem("token");
+                localStorage.removeItem("user");
                 window.location.reload();
             }}>
                 Logout

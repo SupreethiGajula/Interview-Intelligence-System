@@ -54,8 +54,9 @@ function CandidateList({ candidates, refreshCandidates }) {
         const res = await fetch(`http://localhost:5001/candidates/${id}/scores`, {
             method: "PUT",
             headers: {
-                "Content-Type": "application/json"
-            },
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token")}`
+  },
             body: JSON.stringify(candidateScores)
         });
 

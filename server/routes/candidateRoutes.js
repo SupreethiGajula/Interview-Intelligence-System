@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const Candidate = require("../models/Candidate");
 const RoleWeight = require("../models/RoleWeight");
+const authMiddleware = require("../middlewares/authMiddleware");
+const roleMiddleware = require("../middlewares/roleMiddleware");
 
-
-
-router.post('/',async(req,res)=>{
+router.post('/',authMiddleware,roleMiddleware(['recruiter']),async(req,res)=>{
     try {
     const newCandidate = new Candidate(req.body);
     const savedCandidate = await newCandidate.save();
@@ -16,7 +16,7 @@ router.post('/',async(req,res)=>{
 });
 
 //route to get all candidates from DB
-router.get('/',async(req,res)=>{
+router.get('/',authMiddleware,roleMiddleware(["recruiter"]),async(req,res)=>{
     try {
     const candidates = await Candidate.find();
     res.json(candidates);
@@ -25,7 +25,7 @@ router.get('/',async(req,res)=>{
   }
 })
 
-router.put("/:id/status", async (req,res)=>{
+router.put("/:id/status",authMiddleware,roleMiddleware(["recruiter"]),async (req,res)=>{
     try{
         const {status} = req.body;
 
@@ -40,7 +40,7 @@ router.put("/:id/status", async (req,res)=>{
     }
 });
 
-router.put("/:id/scores",async(req,res)=>{
+router.put("/:id/scores",authMiddleware,roleMiddleware(["recruiter"]),async(req,res)=>{
     try{
         const { dsaScore, systemDesignScore, projectScore, hrScore } = req.body;
         const newCandidate = await Candidate.findById(req.params.id);
@@ -78,7 +78,7 @@ router.put("/:id/scores",async(req,res)=>{
     }
 })
 
-router.get("/top/:role", async (req, res) => {
+router.get("/top/:role", authMiddleware,roleMiddleware(["recruiter"]),async (req, res) => {
     try {
 
         const role = req.params.role;
@@ -103,7 +103,7 @@ router.get("/top/:role", async (req, res) => {
 
 //leaderboard API - ranks
 
-router.get("/leaderboard/:role", async (req, res) => {
+router.get("/leaderboard/:role", authMiddleware,roleMiddleware(["recruiter"]),async (req, res) => {
     try {
 
         const role = req.params.role;

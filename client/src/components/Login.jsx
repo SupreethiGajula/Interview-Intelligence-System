@@ -23,6 +23,7 @@ function Login({ setUser }) {
 
     if (response.ok) {
       localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       setUser(data.user);
     } else {
       alert(data.message);

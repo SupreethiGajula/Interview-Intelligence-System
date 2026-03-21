@@ -3,36 +3,33 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import RecruiterDashboard from "./components/RecruiterDashboard";
 import CandidateDashboard from "./components/CandidateDashboard";
+import Home from "./components/Home"
 
 function App() {
 
   const [user, setUser] = useState(null);
   const [showRegister, setShowRegister] = useState(false);
+  const [page,setPage] = useState("home");
   useEffect(() => {
-  const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem("user");
 
-  if (storedUser) {
-    setUser(JSON.parse(storedUser));
-  }
-}, []);
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   if (!user) {
-    return (
-      <div>
+    if (page === "home") {
+      return <Home setPage={setPage} />;
+    }
 
-        {showRegister ? (
-          <Register setUser={setUser} />
-        ) : (
-          <Login setUser={setUser} />
-        )}
+    if (page === "login") {
+      return <Login setUser={setUser} setPage={setPage} />;
+    }
 
-        <button onClick={() => setShowRegister(!showRegister)}>
-          {showRegister ? "Go to Login" : "Go to Register"}
-        </button>
-
-      </div>
-    );
-
+    if (page === "register") {
+      return <Register setUser={setUser} setPage={setPage} />;
+    }
   }
   if (user.role === "recruiter") {
     return <RecruiterDashboard user={user} />;

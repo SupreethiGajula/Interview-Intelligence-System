@@ -130,4 +130,23 @@ router.get("/leaderboard/:role", authMiddleware,roleMiddleware(["recruiter"]),as
         res.status(500).json({ error: err.message });
     }
 });
+router.get("/me", authMiddleware, async (req, res) => {
+
+  try {
+
+    const userId = req.user.id;
+
+    const candidate = await Candidate.findOne({ email: req.user.email });
+
+    if (!candidate) {
+      return res.status(404).json({ message: "Candidate not found" });
+    }
+
+    res.json(candidate);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+
+});
 module.exports = router;

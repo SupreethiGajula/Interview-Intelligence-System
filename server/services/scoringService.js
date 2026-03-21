@@ -1,6 +1,8 @@
-function calculateFinalScore(candidate){
-    const weights = {
-        dsa:0.4,
-        systemDesign
-    }
+function calculateFinalScore(candidate, weights) {
+  return (
+    candidate.dsaScore * weights.dsaWeight +
+    candidate.systemDesignScore * weights.systemDesignWeight +
+    candidate.projectScore * weights.projectWeight +
+    candidate.hrScore * weights.hrWeight
+  );
 }

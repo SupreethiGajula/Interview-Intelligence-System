@@ -1,24 +1,21 @@
+// src/components/AddCandidate.jsx
 import { useState, useEffect } from "react";
 
 function AddCandidate({ refreshCandidates }) {
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [experience, setExperience] = useState("");
   const [skills, setSkills] = useState("");
   const [targetRole, setTargetRole] = useState("");
-
-  const [roles, setRoles] = useState([]); // stores roles from backend
-
+  const [roles, setRoles] = useState([]);
 
   // fetch roles when component loads
   useEffect(() => {
     fetch("http://localhost:5001/roleweights")
-      .then(res => res.json())
-      .then(data => setRoles(data))
-      .catch(err => console.error(err));
+      .then((res) => res.json())
+      .then((data) => setRoles(data))
+      .catch((err) => console.error(err));
   }, []);
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,16 +25,16 @@ function AddCandidate({ refreshCandidates }) {
       email,
       experience: Number(experience),
       skills: skills.split(","),
-      targetRole
+      targetRole,
     };
 
     const res = await fetch("http://localhost:5001/candidates", {
       method: "POST",
       headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("token")}`
-  },
-      body: JSON.stringify(candidate)
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(candidate),
     });
 
     const data = await res.json();
@@ -53,69 +50,76 @@ function AddCandidate({ refreshCandidates }) {
     setTargetRole("");
   };
 
-
   return (
-    <div style={{ marginBottom: "40px" }}>
-      <h2>Add Candidate</h2>
+    <div className="flex items-center justify-center">
+      <div className="bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md">
+        <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
+          Add New Candidate
+        </h2>
 
-      <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Name */}
+          <input
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
 
-        <input
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+          {/* Email */}
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
 
-        <br /><br />
+          {/* Experience */}
+          <input
+            type="number"
+            placeholder="Experience (years)"
+            value={experience}
+            onChange={(e) => setExperience(e.target.value)}
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            min="0"
+            required
+          />
 
-        <input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          {/* Skills */}
+          <input
+            placeholder="Skills (comma separated)"
+            value={skills}
+            onChange={(e) => setSkills(e.target.value)}
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
 
-        <br /><br />
+          {/* Target Role */}
+          <select
+            value={targetRole}
+            onChange={(e) => setTargetRole(e.target.value)}
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          >
+            <option value="">Select Target Role</option>
+            {roles.map((role) => (
+              <option key={role._id} value={role.role}>
+                {role.role}
+              </option>
+            ))}
+          </select>
 
-        <input
-          placeholder="Experience"
-          value={experience}
-          onChange={(e) => setExperience(e.target.value)}
-        />
-
-        <br /><br />
-
-        <input
-          placeholder="Skills (comma separated)"
-          value={skills}
-          onChange={(e) => setSkills(e.target.value)}
-        />
-
-        <br /><br />
-
-        {/* REPLACED INPUT WITH DROPDOWN */}
-
-        <select
-          value={targetRole}
-          onChange={(e) => setTargetRole(e.target.value)}
-        >
-
-          <option value="">Select Target Role</option>
-
-          {roles.map((role) => (
-            <option key={role._id} value={role.role}>
-              {role.role}
-            </option>
-          ))}
-
-        </select>
-
-        <br /><br />
-
-        <button type="submit">
-          Add Candidate
-        </button>
-
-      </form>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition duration-200 font-semibold"
+          >
+            Add Candidate
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

@@ -130,6 +130,22 @@ router.get("/leaderboard/:role", authMiddleware,roleMiddleware(["recruiter"]),as
         res.status(500).json({ error: err.message });
     }
 });
+// DELETE /candidates/:id/delete
+router.delete("/:id/delete", async (req, res) => {
+  try {
+    const { id } = req.params; // Correct way to get id from URL
+    const deletedCandidate = await Candidate.findByIdAndDelete(id);
+
+    if (!deletedCandidate) {
+      return res.status(404).json({ message: "Candidate not found" });
+    }
+
+    res.json({ message: "Candidate deleted successfully", candidate: deletedCandidate });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
 router.get("/me", authMiddleware, async (req, res) => {
 
   try {

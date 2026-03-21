@@ -9,7 +9,7 @@ const candidateSchema = new Schema({
     targetRole: { type: String, required: true },
     status:{
         type:String,
-        enum:["Applied","DSA","SystemDesign","HR","Selected","Rejected"],
+        enum:["Applied","Interviewed","Selected","Rejected"],
         default:"Applied"
     },
     dsaScore: { type: Number, default: 0 },

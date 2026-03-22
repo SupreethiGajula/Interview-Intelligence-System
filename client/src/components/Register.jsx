@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeClosed } from "lucide-react";
 
 function Register({ setUser, setPage }) {
@@ -7,15 +7,16 @@ function Register({ setUser, setPage }) {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("candidate");
   const [showPassword, setShowPassword] = useState(false);
-  const [targetRole,setTargetRole] = useState("");
+  const [targetRole, setTargetRole] = useState("");
   const [roles, setRoles] = useState([]);
+  const [experience,setExperience] = useState("");
 
-useEffect(() => {
-  fetch("http://localhost:5001/roleweights")
-    .then(res => res.json())
-    .then(data => setRoles(data))
-    .catch(err => console.error(err));
-}, []);
+  useEffect(() => {
+    fetch("http://localhost:5001/roleweights")
+      .then(res => res.json())
+      .then(data => setRoles(data))
+      .catch(err => console.error(err));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +24,7 @@ useEffect(() => {
     const response = await fetch("http://localhost:5001/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, role ,targetRole}),
+      body: JSON.stringify({ name, email, password, role, targetRole,experience }),
     });
 
     const data = await response.json();
@@ -104,18 +105,28 @@ useEffect(() => {
           </select>
           {/* Conditionally show target role only for candidates */}
           {role === "candidate" && (
-            <select
-              value={targetRole}
-              onChange={(e) => setTargetRole(e.target.value)}
-              className="w-full mb-6 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="">Select Target Role</option>
-              {roles.map((role) => (
-                <option key={role._id} value={role.role}>
-                  {role.role}
-                </option>
-              ))}
-            </select>
+            <>
+              <select
+                value={targetRole}
+                onChange={(e) => setTargetRole(e.target.value)}
+                className="w-full mb-6 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="">Select Target Role</option>
+                {roles.map((role) => (
+                  <option key={role._id} value={role.role}>
+                    {role.role}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="number"
+                placeholder="Experience (in years)"
+                value={experience}
+                onChange={(e) => setExperience(e.target.value)}
+                className="w-full p-3 border rounded-lg"
+                min="0"
+              />
+            </>
           )}
           {/* Register Button */}
           <button

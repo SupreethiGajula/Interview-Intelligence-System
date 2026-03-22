@@ -10,7 +10,7 @@ router.post("/register", async (req, res) => {
 
   try {
 
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role,targetRole,experience } = req.body;
 
     const existingUser = await User.findOne({ email });
 
@@ -26,6 +26,23 @@ router.post("/register", async (req, res) => {
     });
 
     await user.save();
+    if (role === "candidate") {
+      await Candidate.create({
+        name,
+        email,
+        targetRole: targetRole || "",
+
+        // default values
+        experience: Number(experience)||0,
+        dsaScore: 0,
+        systemDesignScore: 0,
+        projectScore: 0,
+        hrScore: 0,
+        finalScore: 0,
+        status: "Applied"
+      });
+    }
+
 
     res.status(201).json({
       message: "User registered successfully",

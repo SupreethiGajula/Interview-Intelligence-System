@@ -8,7 +8,7 @@ function RecruiterDashboard({ user }) {
 
   const fetchCandidates = async () => {
     try {
-      const res = await fetch("http://localhost:5001/candidates", {
+      const res = await fetch("http://16.170.236.87:5001/candidates", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

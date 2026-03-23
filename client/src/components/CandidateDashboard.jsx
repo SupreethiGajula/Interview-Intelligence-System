@@ -5,7 +5,7 @@ function CandidateDashboard({ user }) {
   const [candidate, setCandidate] = useState(null);
 
   const fetchMyData = async () => {
-    const res = await fetch("http://localhost:5001/candidates/me", {
+    const res = await fetch("http://16.170.236.87:5001/candidates/me", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },

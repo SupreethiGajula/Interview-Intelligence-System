@@ -12,7 +12,7 @@ function Register({ setUser, setPage }) {
   const [experience,setExperience] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5001/roleweights")
+    fetch("http://16.170.236.87:5001/roleweights")
       .then(res => res.json())
       .then(data => setRoles(data))
       .catch(err => console.error(err));
@@ -21,7 +21,7 @@ function Register({ setUser, setPage }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:5001/auth/register", {
+    const response = await fetch("http://16.170.236.87:5001/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password, role, targetRole,experience }),

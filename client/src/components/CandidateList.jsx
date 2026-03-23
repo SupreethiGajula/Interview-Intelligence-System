@@ -10,7 +10,7 @@ function CandidateList({ candidates, refreshCandidates }) {
 
     // Fetch roles for filter dropdown
     useEffect(() => {
-        fetch("http://localhost:5001/roleweights")
+        fetch("http://16.170.236.87:5001/roleweights")
             .then((res) => res.json())
             .then((data) => setRoles(data))
             .catch((err) => console.error(err));
@@ -63,7 +63,7 @@ function CandidateList({ candidates, refreshCandidates }) {
         }
 
         try {
-            const res = await fetch(`http://localhost:5001/candidates/${id}/scores`, {
+            const res = await fetch(`http://16.170.236.87:5001/candidates/${id}/scores`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -83,7 +83,7 @@ function CandidateList({ candidates, refreshCandidates }) {
     };
     const updateStatus = async (id, status) => {
         try {
-            const res = await fetch(`http://localhost:5001/candidates/${id}/status`, {
+            const res = await fetch(`http://16.170.236.87:5001/candidates/${id}/status`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

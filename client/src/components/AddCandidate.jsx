@@ -11,7 +11,7 @@ function AddCandidate({ refreshCandidates }) {
 
   // fetch roles when component loads
   useEffect(() => {
-    fetch("http://localhost:5001/roleweights")
+    fetch("http://16.170.236.87:5001/roleweights")
       .then((res) => res.json())
       .then((data) => setRoles(data))
       .catch((err) => console.error(err));
@@ -28,7 +28,7 @@ function AddCandidate({ refreshCandidates }) {
       targetRole,
     };
 
-    const res = await fetch("http://localhost:5001/candidates", {
+    const res = await fetch("http://16.170.236.87:5001/candidates", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

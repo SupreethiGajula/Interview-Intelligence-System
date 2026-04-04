@@ -9,22 +9,70 @@ function Register({ setUser, setPage }) {
   const [showPassword, setShowPassword] = useState(false);
   const [targetRole, setTargetRole] = useState("");
   const [roles, setRoles] = useState([]);
-  const [experience,setExperience] = useState("");
+  const [experience, setExperience] = useState("");
+  const [errors, setErrors] = useState({});
 
+  // Fetch available roles for candidate dropdown
   useEffect(() => {
     fetch("http://16.170.236.87:5001/roleweights")
-      .then(res => res.json())
-      .then(data => setRoles(data))
-      .catch(err => console.error(err));
+      .then((res) => res.json())
+      .then((data) => setRoles(data))
+      .catch((err) => console.error(err));
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const newErrors = {};
+    const nameRegex = /^[A-Za-z ]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    // Name validation
+    if (!nameRegex.test(name)) {
+      newErrors.name = "Name should contain only alphabets";
+    }
+
+    // Email validation
+    if (!emailRegex.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Password validation
+    if (!passwordRegex.test(password)) {
+      newErrors.password =
+        "Password must be 8+ chars with uppercase, lowercase and number";
+    }
+
+    // Candidate-only validations
+    if (role === "candidate") {
+      if (!targetRole) {
+        newErrors.targetRole = "Please select a target role";
+      }
+
+      if (experience === "" || Number(experience) < 0) {
+        newErrors.experience = "Experience must be 0 or more";
+      }
+    }
+
+    setErrors(newErrors);
+
+    // Stop API call if errors exist
+    if (Object.keys(newErrors).length > 0) return;
+
     const response = await fetch("http://16.170.236.87:5001/auth/register", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, role, targetRole,experience }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        role,
+        targetRole,
+        experience,
+      }),
     });
 
     const data = await response.json();
@@ -47,88 +95,143 @@ function Register({ setUser, setPage }) {
           "url('https://images.unsplash.com/photo-1497864149936-d3163f0c0f4b?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
       }}
     >
-
       {/* Register Card */}
-      <div className="relative z-10 bg-white p-8 rounded-2xl shadow-2xl w-110">
+      <div className="relative z-10 bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-[440px]">
         <h2 className="text-3xl font-bold text-center mb-2 text-gray-800">
           Create Account ✨
         </h2>
-        <p className="text-gray-500 text-center mb-6">Register to get started</p>
+        <p className="text-gray-500 text-center mb-6">
+          Register to get started
+        </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           {/* Name */}
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-
-          {/* Email */}
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-
-          {/* Password with eye toggle */}
-          <div className="relative">
+          <div>
             <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setErrors({ ...errors, name: "" });
+              }}
+              className={`w-full p-3 border rounded-lg ${
+                errors.name ? "border-red-500" : ""
+              }`}
             />
-            <span
-              className="absolute right-3 top-3 cursor-pointer text-gray-500"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
-            </span>
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
 
-          {/* Role select */}
+          {/* Email */}
+          <div>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrors({ ...errors, email: "" });
+              }}
+              className={`w-full p-3 border rounded-lg ${
+                errors.email ? "border-red-500" : ""
+              }`}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setErrors({ ...errors, password: "" });
+                }}
+                className={`w-full p-3 border rounded-lg ${
+                  errors.password ? "border-red-500" : ""
+                }`}
+              />
+              <span
+                className="absolute right-3 top-3 cursor-pointer text-gray-500"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
+              </span>
+            </div>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            )}
+          </div>
+
+          {/* Role */}
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full p-3 border rounded-lg"
           >
             <option value="candidate">Candidate</option>
             <option value="recruiter">Recruiter</option>
           </select>
-          {/* Conditionally show target role only for candidates */}
+
+          {/* Candidate-only fields */}
           {role === "candidate" && (
             <>
-              <select
-                value={targetRole}
-                onChange={(e) => setTargetRole(e.target.value)}
-                className="w-full mb-6 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">Select Target Role</option>
-                {roles.map((role) => (
-                  <option key={role._id} value={role.role}>
-                    {role.role}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="number"
-                placeholder="Experience (in years)"
-                value={experience}
-                onChange={(e) => setExperience(e.target.value)}
-                className="w-full p-3 border rounded-lg"
-                min="0"
-              />
+              <div>
+                <select
+                  value={targetRole}
+                  onChange={(e) => {
+                    setTargetRole(e.target.value);
+                    setErrors({ ...errors, targetRole: "" });
+                  }}
+                  className={`w-full p-3 border rounded-lg ${
+                    errors.targetRole ? "border-red-500" : ""
+                  }`}
+                >
+                  <option value="">Select Target Role</option>
+                  {roles.map((roleItem) => (
+                    <option key={roleItem._id} value={roleItem.role}>
+                      {roleItem.role}
+                    </option>
+                  ))}
+                </select>
+                {errors.targetRole && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.targetRole}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <input
+                  type="number"
+                  placeholder="Experience (in years)"
+                  value={experience}
+                  onChange={(e) => {
+                    setExperience(e.target.value);
+                    setErrors({ ...errors, experience: "" });
+                  }}
+                  className={`w-full p-3 border rounded-lg ${
+                    errors.experience ? "border-red-500" : ""
+                  }`}
+                  min="0"
+                />
+                {errors.experience && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.experience}
+                  </p>
+                )}
+              </div>
             </>
           )}
-          {/* Register Button */}
+
+          {/* Submit */}
           <button
             type="submit"
             className="w-full bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition"
@@ -137,7 +240,7 @@ function Register({ setUser, setPage }) {
           </button>
         </form>
 
-        {/* Switch to Login */}
+        {/* Login switch */}
         <p className="text-sm text-gray-500 mt-4 text-center">
           Already have an account?
           <button

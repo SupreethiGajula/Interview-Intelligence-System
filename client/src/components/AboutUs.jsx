@@ -37,8 +37,8 @@ function AboutUs() {
         <p className="text-gray-700">
           Meet <span className="font-semibold">Supreethi</span> — the one-person army behind
     this platform! 💪 Built this app from scratch, fueled by coffee ☕, a sprinkle
-    of magic ✨, and an unhealthy obsession with coding. If it works, thank Supriti;
-    if it breaks… well, still blame Supriti 😅.  
+    of magic ✨, and an unhealthy obsession with coding. If it works, thank Supreethi;
+    if it breaks… well, still blame Supreethi 😅.  
     This app exists to make recruitment smarter, easier, and a little more fun!
         </p>
       </div>

@@ -5,9 +5,24 @@ function Login({ setUser, setPage }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    }
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
     const response = await fetch("http://16.170.236.87:5001/auth/login", {
       method: "POST",
@@ -29,50 +44,67 @@ function Login({ setUser, setPage }) {
 
   return (
     <div
-      className="min-h-screen relative flex items-center justify-end pr-60  bg-cover bg-center"
+      className="min-h-screen relative flex items-center justify-end pr-60 bg-cover bg-center"
       style={{
         backgroundImage:
           "url('https://images.unsplash.com/photo-1497864149936-d3163f0c0f4b?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
       }}
     >
-
       {/* Login Card */}
-      <div className="relative z-10 bg-white p-8 rounded-2xl shadow-2xl w-96">
+      <div className="relative z-10 bg-white/90 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-96">
         <h2 className="text-3xl font-bold text-center mb-2 text-gray-800">
           Welcome Back 👋
         </h2>
         <p className="text-gray-500 text-center mb-6">Login to your account</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           {/* Email */}
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-
-          {/* Password */}
-          <div className="relative">
+          <div>
             <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrors({ ...errors, email: "" });
+              }}
+              className={`w-full p-3 border rounded-lg ${
+                errors.email ? "border-red-500" : ""
+              }`}
             />
-            <span
-              className="absolute right-3 top-3 cursor-pointer text-gray-500"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
-            </span>
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            )}
           </div>
 
-          {/* Submit Button */}
+          {/* Password */}
+          <div>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setErrors({ ...errors, password: "" });
+                }}
+                className={`w-full p-3 border rounded-lg ${
+                  errors.password ? "border-red-500" : ""
+                }`}
+              />
+              <span
+                className="absolute right-3 top-3 cursor-pointer text-gray-500"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
+              </span>
+            </div>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            )}
+          </div>
+
+          {/* Submit */}
           <button
             type="submit"
             className="w-full bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition"
@@ -81,7 +113,7 @@ function Login({ setUser, setPage }) {
           </button>
         </form>
 
-        {/* Switch to Register */}
+        {/* Register switch */}
         <p className="text-sm text-gray-500 mt-4 text-center">
           Don’t have an account?
           <button

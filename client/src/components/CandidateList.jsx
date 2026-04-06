@@ -83,7 +83,7 @@ function CandidateList({ candidates, refreshCandidates }) {
     };
     const updateStatus = async (id, status) => {
         try {
-            const res = await fetch(`http://16.170.236.87:5001/candidates/${id}/status`, {
+            const res = await fetch(`localhost:5001/candidates/${id}/status`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

@@ -42,6 +42,11 @@ router.post("/register", async (req, res) => {
     });
 
     await user.save();
+    const token = jwt.sign(
+      { id: user._id, role: user.role, email: user.email },
+      "secretkey",
+      { expiresIn: "1d" }
+    );
 
     // If candidate, create Candidate document
     if (role === "candidate") {
@@ -61,6 +66,7 @@ router.post("/register", async (req, res) => {
 
     res.status(201).json({
       message: "User registered successfully",
+      token,
       user
     });
 

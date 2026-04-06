@@ -40,15 +40,13 @@ const registerSchema = Joi.object({
       "string.empty": "Role is required",
     }),
 
-  targetRole: Joi.string()
-    .when("role", { is: "candidate", then: Joi.required() })
+  targetRole: Joi.string().optional().allow("")
     .messages({
       "any.required": "Target role is required for candidates",
     }),
 
-  experience: Joi.number()
+  experience: Joi.number().optional().empty("")
     .min(0)
-    .when("role", { is: "candidate", then: Joi.required() })
     .messages({
       "number.base": "Experience must be a number",
       "number.min": "Experience cannot be negative",

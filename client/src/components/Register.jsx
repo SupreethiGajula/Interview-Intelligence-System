@@ -14,7 +14,7 @@ function Register({ setUser, setPage }) {
 
   // Fetch available roles for candidate dropdown
   useEffect(() => {
-    fetch("http://localhost:5001/roleweights")
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/roleweights`)
       .then((res) => res.json())
       .then((data) => setRoles(data))
       .catch((err) => console.error(err));
@@ -60,7 +60,7 @@ function Register({ setUser, setPage }) {
     // Stop API call if errors exist
     if (Object.keys(newErrors).length > 0) return;
 
-    const response = await fetch("http://localhost:5001/auth/register", {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

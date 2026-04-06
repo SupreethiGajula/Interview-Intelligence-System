@@ -11,7 +11,7 @@ function AddCandidate({ refreshCandidates }) {
 
   // fetch roles when component loads
   useEffect(() => {
-    fetch("http://localhost:5001/roleweights")
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/roleweights`)
       .then((res) => res.json())
       .then((data) => setRoles(data))
       .catch((err) => console.error(err));
@@ -28,7 +28,7 @@ function AddCandidate({ refreshCandidates }) {
       targetRole,
     };
 
-    const res = await fetch("http://localhost:5001/candidates", {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/candidates`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

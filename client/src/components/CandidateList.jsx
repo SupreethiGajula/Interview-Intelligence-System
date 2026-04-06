@@ -1,5 +1,6 @@
 // src/components/CandidateList.jsx
 import { useState, useEffect } from "react";
+import { Search } from "lucide-react";
 
 function CandidateList({ candidates, refreshCandidates }) {
     const [scores, setScores] = useState({});
@@ -10,7 +11,7 @@ function CandidateList({ candidates, refreshCandidates }) {
 
     // Fetch roles for filter dropdown
     useEffect(() => {
-        fetch("http://16.170.236.87:5001/roleweights")
+        fetch(`${import.meta.env.VITE_API_BASE_URL}/roleweights`)
             .then((res) => res.json())
             .then((data) => setRoles(data))
             .catch((err) => console.error(err));
@@ -63,7 +64,7 @@ function CandidateList({ candidates, refreshCandidates }) {
         }
 
         try {
-            const res = await fetch(`http://16.170.236.87:5001/candidates/${id}/scores`, {
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/candidates/${id}/scores`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -83,7 +84,7 @@ function CandidateList({ candidates, refreshCandidates }) {
     };
     const updateStatus = async (id, status) => {
         try {
-            const res = await fetch(`localhost:5001/candidates/${id}/status`, {
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/candidates/${id}/status`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -132,7 +133,7 @@ function CandidateList({ candidates, refreshCandidates }) {
                     <select
                         value={sortOrder}
                         onChange={(e) => setSortOrder(e.target.value)}
-                        className="border rounded-lg p-2"
+                        className="w-50 border rounded-lg p-2"
                     >
                         <option value="">No Sorting</option>
                         <option value="desc">Highest First</option>
@@ -140,13 +141,17 @@ function CandidateList({ candidates, refreshCandidates }) {
                     </select>
                 </div>
 
-                <div className="flex-1">
+                <div className="flex-1 relative">
                     <input
                         type="text"
                         value={searchTerm}
                         placeholder="Search by name or email"
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full border rounded-lg p-2"
+                        className="ml-70 w-80 border rounded-lg p-2 pr-10"
+                    />
+                    <Search
+                        size={18}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
                     />
                 </div>
             </div>

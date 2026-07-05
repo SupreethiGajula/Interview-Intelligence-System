@@ -10,7 +10,7 @@ const { GoogleGenAI } = require("@google/genai");
 const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY,
 });
-
+//route to add candidate by recruiter only
 router.post(
     "/",
     authMiddleware,
@@ -49,7 +49,7 @@ router.get('/', authMiddleware, roleMiddleware(["recruiter"]), async (req, res) 
         res.status(500).json({ error: error.message });
     }
 })
-
+//route to update candidate status
 router.put("/:id/status", authMiddleware, roleMiddleware(["recruiter"]), async (req, res) => {
     try {
         const { status } = req.body;
@@ -157,7 +157,8 @@ router.get("/leaderboard/:role", authMiddleware, roleMiddleware(["recruiter"]), 
     }
 });
 // DELETE /candidates/:id/delete
-router.delete("/:id/delete", async (req, res) => {
+router.delete("/:id/delete",authMiddleware,
+    roleMiddleware(["recruiter"]), async (req, res) => {
     try {
         const { id } = req.params; // Correct way to get id from URL
         const deletedCandidate = await Candidate.findByIdAndDelete(id);

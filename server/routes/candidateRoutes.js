@@ -68,13 +68,13 @@ router.put("/:id/status", authMiddleware, roleMiddleware(["recruiter"]), async (
 router.put("/:id/scores", authMiddleware, roleMiddleware(["recruiter"]), async (req, res) => {
     try {
         const { dsaScore, systemDesignScore, projectScore, hrScore } = req.body;
-        const newCandidate = await Candidate.findById(req.params.id);
-        if (!newCandidate) {
+        const existingCandidate = await Candidate.findById(req.params.id);
+        if (!existingCandidate) {
             return res.status(404).json({ message: "Candidate not found" });
         }
-        console.log("Candidate role:", newCandidate.targetRole);
+        console.log("Candidate role:", existingCandidate.targetRole);
 
-        const roleWeight = await RoleWeight.findOne({ role: newCandidate.targetRole });
+        const roleWeight = await RoleWeight.findOne({ role: existingCandidate.targetRole });
 
         console.log("Role weight found:", roleWeight);
         if (!roleWeight) {

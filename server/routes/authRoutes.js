@@ -44,7 +44,7 @@ router.post("/register", async (req, res) => {
     await user.save();
     const token = jwt.sign(
       { id: user._id, role: user.role, email: user.email },
-      "secretkey",
+      "secretkey",//should be taken from env variables basically
       { expiresIn: "1d" }
     );
 

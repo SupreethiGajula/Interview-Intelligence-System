@@ -9,6 +9,7 @@ function Login({ setUser, setPage }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
 
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
